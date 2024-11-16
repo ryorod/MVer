@@ -7,6 +7,7 @@ import { type ReactNode, useState } from "react";
 import { type State, WagmiProvider } from "wagmi";
 
 import { getConfig } from "@/lib/wagmi"; // your import path may vary
+import { ONCHAINKIT_API_KEY } from "@/constants/config";
 
 export function Providers(props: {
   children: ReactNode;
@@ -19,7 +20,7 @@ export function Providers(props: {
     <WagmiProvider config={config} initialState={props.initialState}>
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider
-          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+          apiKey={ONCHAINKIT_API_KEY}
           chain={baseSepolia} // add baseSepolia for testing
         >
           {props.children}
