@@ -61,7 +61,8 @@ const CreatePage = () => {
       };
 
       // Upload metadata to IPFS
-      const collectibleURI = await uploadJsonToIpfs(collectibleMetadata);
+      const collectibleCID = await uploadJsonToIpfs(collectibleMetadata);
+      const collectibleURI = `ipfs://${collectibleCID}`;
 
       setUploadState("minting");
 
@@ -219,22 +220,27 @@ const CreatePage = () => {
                 min="1"
               />
             </div>
-
-            {/* Upload Button */}
-            <TransactionComponents
-              className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-bold text-white [&_*]:text-white"
-              contract={{
-                ...MVerFactoryABIAddress,
-                functionName: "createContent",
-                args: [], // temporary
-              }}
-              buttonText="Upload Content"
-              getArgsBeforeSubmit={prepareCreateContentArgs}
-            />
           </div>
         ) : (
           <UploadStatus />
         )}
+
+        {/* Upload Button */}
+        <TransactionComponents
+          className={`w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-bold text-white [&_*]:text-white mt-6`}
+          wrpClassName={`${
+            uploadState !== "idle"
+              ? "pointer-events-none opacity-0 h-0 p-0 m-0"
+              : ""
+          }`}
+          contract={{
+            ...MVerFactoryABIAddress,
+            functionName: "createContent",
+            args: [], // temporary
+          }}
+          buttonText="Upload Content"
+          getArgsBeforeSubmit={prepareCreateContentArgs}
+        />
       </div>
     </div>
   );
