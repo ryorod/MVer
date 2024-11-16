@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
-contract MVerOriginal is ERC721, ERC721URIStorage, ERC721Enumerable {
+contract MVerOriginal is ERC721URIStorage, ERC721Enumerable {
     uint256 private _tokenIds;
+    address public factory;
 
     struct OriginalContent {
         string title;
@@ -38,6 +38,12 @@ contract MVerOriginal is ERC721, ERC721URIStorage, ERC721Enumerable {
     );
 
     constructor() ERC721("MVer Original", "MVERO") {}
+
+    function setFactory(address _factory) external {
+        require(factory == address(0), "Factory already set");
+        require(_factory != address(0), "Invalid factory address");
+        factory = _factory;
+    }
 
     function createContent(
         string memory title,
@@ -73,6 +79,12 @@ contract MVerOriginal is ERC721, ERC721URIStorage, ERC721Enumerable {
         return newTokenId;
     }
 
+    function updateCollectibleContract(uint256 tokenId, address collectibleContract) external {
+        require(msg.sender == factory, "Only factory can update");
+        require(_ownerOf(tokenId) != address(0), "Content doesn't exist");
+        originals[tokenId].collectibleContract = collectibleContract;
+    }
+
     function likeContent(uint256 tokenId) external {
         require(_ownerOf(tokenId) != address(0), "Content doesn't exist");
         require(!_hasLiked[tokenId][msg.sender], "Already liked");
@@ -92,7 +104,7 @@ contract MVerOriginal is ERC721, ERC721URIStorage, ERC721Enumerable {
         return originals[tokenId].likes;
     }
 
-    function setApprovalForFactory(address factory, bool approved) external {
+    function setApprovalForFactory(bool approved) external {
         setApprovalForAll(factory, approved);
     }
 
@@ -124,7 +136,7 @@ contract MVerOriginal is ERC721, ERC721URIStorage, ERC721Enumerable {
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721, ERC721Enumerable, ERC721URIStorage)
+        override(ERC721URIStorage, ERC721Enumerable)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
@@ -205,23 +217,26 @@ contract MVerFactory {
             "Factory not approved"
         );
 
-        // 1. Deploy collectible contract
+        // 1. Create original content first
+        uint256 tokenId = originalContract.createContent(
+            title,
+            genre,
+            originalUri,
+            address(0) // Temporary address, will be updated
+        );
+
+        // 2. Deploy collectible contract with the correct tokenId
         MVerCollectible collectible = new MVerCollectible(
             address(originalContract),
-            0, // Will be updated after original creation
+            tokenId,
             msg.sender,
             price,
             maxSupply,
             collectibleUri
         );
 
-        // 2. Create original content
-        uint256 tokenId = originalContract.createContent(
-            title,
-            genre,
-            originalUri,
-            address(collectible)
-        );
+        // 3. Update the collectible contract address in the original content
+        originalContract.updateCollectibleContract(tokenId, address(collectible));
 
         emit ContentCreated(
             tokenId,

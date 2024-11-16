@@ -106,7 +106,7 @@ const CreatePage = () => {
       configs.push({
         ...MVerOriginalABIAddress,
         functionName: "setApprovalForFactory",
-        args: [MVerFactoryABIAddress.address, true],
+        args: [true],
       });
     }
 
