@@ -1,5 +1,4 @@
-"use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback } from "react";
 import { Avatar, Name } from "@coinbase/onchainkit/identity";
 import {
   Transaction,
@@ -15,17 +14,15 @@ import { useAccount } from "wagmi";
 import { BASE_SEPOLIA_CHAIN_ID } from "@/constants/config";
 
 export default function TransactionComponents({
-  contract,
+  contracts,
   buttonText,
   className,
   wrpClassName,
-  getArgsBeforeSubmit,
 }: {
-  contract: any;
+  contracts: any[];
   buttonText?: string;
   className?: string;
   wrpClassName?: string;
-  getArgsBeforeSubmit?: () => Promise<any[]>;
 }) {
   const { address } = useAccount();
 
@@ -33,42 +30,14 @@ export default function TransactionComponents({
     console.log("LifecycleStatus", status);
   }, []);
 
-  const [contractState, setContractState] = useState(contract);
-  const wrpRef = useRef<HTMLDivElement>(null);
-  const beforeSubmitEndedRef = useRef(false);
-
-  const beforeSubmit = async () => {
-    if (getArgsBeforeSubmit) {
-      const args = await getArgsBeforeSubmit();
-      beforeSubmitEndedRef.current = true;
-      setContractState({ ...contractState, args });
-      const btnElement = wrpRef.current?.querySelector("button");
-    }
-  };
-
-  useEffect(() => {
-    if (beforeSubmitEndedRef.current) {
-      beforeSubmitEndedRef.current = false;
-      const btnElement = wrpRef.current?.querySelector("button");
-      btnElement?.click();
-    }
-  }, [contractState]);
-
-  useEffect(() => {
-    setContractState(contract);
-  }, [contract]);
-
   return address ? (
     <Transaction
       chainId={BASE_SEPOLIA_CHAIN_ID}
-      contracts={[contractState]}
+      contracts={contracts}
       onStatus={handleOnStatus}
     >
-      <div className={`relative ${wrpClassName ?? ""}`} ref={wrpRef}>
+      <div className={`relative ${wrpClassName ?? ""}`}>
         <TransactionButton className={className} text={buttonText} />
-        {getArgsBeforeSubmit && (
-          <div className="absolute inset-0" onClick={beforeSubmit} />
-        )}
       </div>
       <TransactionSponsor />
       <TransactionStatus>

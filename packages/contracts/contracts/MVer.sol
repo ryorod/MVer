@@ -92,6 +92,10 @@ contract MVerOriginal is ERC721, ERC721URIStorage, ERC721Enumerable {
         return originals[tokenId].likes;
     }
 
+    function setApprovalForFactory(address factory, bool approved) external {
+        setApprovalForAll(factory, approved);
+    }
+
     // Required overrides...
     function _update(address to, uint256 tokenId, address auth)
         internal
@@ -195,6 +199,12 @@ contract MVerFactory {
         uint256 price,
         uint256 maxSupply
     ) external returns (uint256, address) {
+        // Check if factory is approved
+        require(
+            originalContract.isApprovedForAll(msg.sender, address(this)),
+            "Factory not approved"
+        );
+
         // 1. Deploy collectible contract
         MVerCollectible collectible = new MVerCollectible(
             address(originalContract),

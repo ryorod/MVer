@@ -1,9 +1,12 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { Upload, Shield, Loader } from "lucide-react";
-import { MVerFactoryABIAddress } from "@/constants/abiAndAddress";
+import {
+  MVerFactoryABIAddress,
+  MVerOriginalABIAddress,
+} from "@/constants/abiAndAddress";
 import TransactionComponents from "@/components/ui/TransactionComponents";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { uploadJsonToIpfs, uploadMetadataToIPFS } from "@/utils/ipfs";
 import { parseEther } from "viem";
 
@@ -27,6 +30,16 @@ const CreatePage = () => {
   const [args, setArgs] = useState<any[]>([]);
 
   const { address } = useAccount();
+
+  // Add approval check
+  const { data: isApproved } = useReadContract({
+    ...MVerOriginalABIAddress,
+    functionName: "isApprovedForAll",
+    args: [address, MVerFactoryABIAddress.address],
+    query: {
+      enabled: !!address,
+    },
+  });
 
   const prepareCreateContentArgs = async () => {
     if (
@@ -85,14 +98,29 @@ const CreatePage = () => {
     }
   };
 
-  const contractConfig = useMemo(
-    () => ({
-      ...MVerFactoryABIAddress,
-      functionName: "createContent",
-      args,
-    }),
-    [args]
-  );
+  const contractConfig = useMemo(() => {
+    const configs = [];
+
+    // Add approval transaction if not approved
+    if (!isApproved) {
+      configs.push({
+        ...MVerOriginalABIAddress,
+        functionName: "setApprovalForFactory",
+        args: [MVerFactoryABIAddress.address, true],
+      });
+    }
+
+    // Add create content transaction
+    if (args.length > 0) {
+      configs.push({
+        ...MVerFactoryABIAddress,
+        functionName: "createContent",
+        args,
+      });
+    }
+
+    return configs;
+  }, [args, isApproved]);
 
   useEffect(() => {
     if (args.length > 0 && uploadState === "uploading") {
@@ -261,7 +289,7 @@ const CreatePage = () => {
               ? "pointer-events-none opacity-0 h-0 p-0 m-0"
               : ""
           }`}
-          contract={contractConfig}
+          contracts={contractConfig}
           buttonText="Publish Content"
         />
       </div>
