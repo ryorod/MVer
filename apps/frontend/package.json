@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@coinbase/onchainkit": "^0.35.5",
     "@solana/web3.js": "^1.95.4",
     "@tanstack/react-query": "^5.60.5",
     "lucide-react": "^0.460.0",
