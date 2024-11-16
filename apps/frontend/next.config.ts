@@ -36,6 +36,7 @@ const nextConfig: NextConfig = {
                 https://paymaster.base.org 
                 https://login.coinbase.com 
                 https://translations.coinbase.com
+                https://api.pinata.cloud
             `
               .replace(/\s+/g, " ")
               .trim(),

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Upload, Shield, Loader } from "lucide-react";
 import { MVerFactoryABIAddress } from "@/constants/abiAndAddress";
 import TransactionComponents from "@/components/ui/TransactionComponents";
@@ -9,7 +9,7 @@ import { parseEther } from "viem";
 
 const CreatePage = () => {
   const [uploadState, setUploadState] = useState<
-    "idle" | "uploading" | "verifying" | "minting"
+    "idle" | "uploading" | "verifying" | "waiting-for-mint" | "minting"
   >("idle");
   const [selectedVideoFile, setSelectedVideoFile] = useState<File | null>(null);
   const [selectedThumbnailFile, setSelectedThumbnailFile] =
@@ -23,6 +23,9 @@ const CreatePage = () => {
   const [price, setPrice] = useState<string>("");
   const [maxSupply, setMaxSupply] = useState<string>("");
   const [genre, setGenre] = useState<string>("MUSIC");
+
+  const [args, setArgs] = useState<any[]>([]);
+
   const { address } = useAccount();
 
   const prepareCreateContentArgs = async () => {
@@ -64,9 +67,7 @@ const CreatePage = () => {
       const collectibleCID = await uploadJsonToIpfs(collectibleMetadata);
       const collectibleURI = `ipfs://${collectibleCID}`;
 
-      setUploadState("minting");
-
-      return [
+      const res = [
         metadata.title,
         genre,
         uploadResult.metadataUrl,
@@ -74,11 +75,21 @@ const CreatePage = () => {
         parseEther(price),
         maxSupply,
       ];
+
+      setArgs(res);
+
+      return res;
     } catch (error) {
       setUploadState("idle");
       throw error;
     }
   };
+
+  useEffect(() => {
+    if (args.length > 0 && uploadState === "uploading") {
+      setUploadState("waiting-for-mint");
+    }
+  }, [args, uploadState]);
 
   const UploadStatus = () => (
     <div className="space-y-6">
@@ -226,20 +237,27 @@ const CreatePage = () => {
         )}
 
         {/* Upload Button */}
+        {uploadState === "idle" && (
+          <button
+            onClick={prepareCreateContentArgs}
+            className={`w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-bold text-white [&_*]:text-white mt-6`}
+          >
+            Upload Content
+          </button>
+        )}
         <TransactionComponents
           className={`w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-bold text-white [&_*]:text-white mt-6`}
           wrpClassName={`${
-            uploadState !== "idle"
+            uploadState !== "waiting-for-mint"
               ? "pointer-events-none opacity-0 h-0 p-0 m-0"
               : ""
           }`}
           contract={{
             ...MVerFactoryABIAddress,
             functionName: "createContent",
-            args: [], // temporary
+            args,
           }}
-          buttonText="Upload Content"
-          getArgsBeforeSubmit={prepareCreateContentArgs}
+          buttonText="Publish Content"
         />
       </div>
     </div>

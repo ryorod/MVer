@@ -54,6 +54,10 @@ export default function TransactionComponents({
     }
   }, [contractState]);
 
+  useEffect(() => {
+    setContractState(contract);
+  }, [contract]);
+
   return address ? (
     <Transaction
       chainId={BASE_SEPOLIA_CHAIN_ID}
