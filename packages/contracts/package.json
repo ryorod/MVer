@@ -6,9 +6,9 @@
     "compile": "hardhat compile",
     "test": "hardhat test",
     "deploy:MVerOriginal": "hardhat ignition deploy ignition/modules/MVerOriginal.ts --network base-sepolia",
-    "verify:MVerOriginal": "hardhat verify 0xF726332B69A6915Ef42a27a18158ccC6dF6bbF57 --network base-sepolia",
+    "verify:MVerOriginal": "hardhat verify 0x4c4E0202526bd10ed17d63C0242Cdba2B551C1cD --network base-sepolia",
     "deploy:MVerFactory": "hardhat ignition deploy ignition/modules/MVerFactory.ts --network base-sepolia",
-    "verify:MVerFactory": "hardhat verify 0x4DF96233Ac5c1b87A8F00Ee5715A4a92bb9ED80A --network base-sepolia --constructor-args ignition/arguments/MVerFactory.ts"
+    "verify:MVerFactory": "hardhat verify 0xcD9bFB8395e45228985d3E5F41B6D2a3657AC415 --network base-sepolia --constructor-args ignition/arguments/MVerFactory.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ignition": "^0.15.7",
