@@ -1,6 +1,21 @@
 "use client";
 import React, { useState } from "react";
-import { WalletDefault } from "@coinbase/onchainkit/wallet";
+import {
+  ConnectWallet,
+  Wallet,
+  WalletDropdown,
+  WalletDropdownBasename,
+  WalletDropdownFundLink,
+  WalletDropdownLink,
+  WalletDropdownDisconnect,
+} from "@coinbase/onchainkit/wallet";
+import {
+  Address,
+  Avatar,
+  Name,
+  Identity,
+  EthBalance,
+} from "@coinbase/onchainkit/identity";
 import {
   Heart,
   MessageCircle,
@@ -9,6 +24,7 @@ import {
   Music,
   Sparkles,
 } from "lucide-react";
+import { WalletDropdownNextLink } from "@/components/ui/WalletDropdownNextLink";
 
 const MainFeed = () => {
   const [currentVideo, setCurrentVideo] = useState(0);
@@ -93,10 +109,38 @@ const MainFeed = () => {
   return (
     <div className="h-screen bg-black text-white">
       {/* Header */}
-      <div className="fixed top-0 w-full z-50 p-4 bg-gradient-to-b from-black to-transparent">
+      <div className="fixed top-0 w-full max-w-xl z-50 p-4 bg-gradient-to-b from-black to-transparent">
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-bold">MVer</h1>
-          <WalletDefault />
+          <Wallet>
+            <ConnectWallet>
+              <Avatar className="h-6 w-6" />
+              <Name />
+            </ConnectWallet>
+            <WalletDropdown>
+              <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
+                <Avatar />
+                <Name />
+                <Address />
+                <EthBalance />
+              </Identity>
+              <WalletDropdownNextLink href="/create">
+                Create
+              </WalletDropdownNextLink>
+              <WalletDropdownNextLink href="/profile">
+                Profile
+              </WalletDropdownNextLink>
+              <WalletDropdownBasename />
+              <WalletDropdownLink
+                icon="wallet"
+                href="https://keys.coinbase.com"
+              >
+                Wallet
+              </WalletDropdownLink>
+              <WalletDropdownFundLink />
+              <WalletDropdownDisconnect />
+            </WalletDropdown>
+          </Wallet>
         </div>
       </div>
 

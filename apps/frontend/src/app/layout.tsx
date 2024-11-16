@@ -46,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${Fonts.openSans.className} antialiased min-h-screen`}>
-        <div>
+        <div className="max-w-xl mx-auto">
           <Providers>
             <main>{children}</main>
           </Providers>
