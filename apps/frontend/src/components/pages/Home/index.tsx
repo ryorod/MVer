@@ -145,7 +145,7 @@ const MainFeed = () => {
       </div>
 
       {/* Video Feed */}
-      <div className="h-full snap-y snap-mandatory overflow-y-scroll">
+      <div className="h-full snap-y snap-mandatory">
         {videos.map((video) => (
           <VideoCard key={video.id} video={video} />
         ))}
