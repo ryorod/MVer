@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Upload, Shield, Loader } from "lucide-react";
 import { MVerFactoryABIAddress } from "@/constants/abiAndAddress";
 import TransactionComponents from "@/components/ui/TransactionComponents";
@@ -84,6 +84,15 @@ const CreatePage = () => {
       throw error;
     }
   };
+
+  const contractConfig = useMemo(
+    () => ({
+      ...MVerFactoryABIAddress,
+      functionName: "createContent",
+      args,
+    }),
+    [args]
+  );
 
   useEffect(() => {
     if (args.length > 0 && uploadState === "uploading") {
@@ -252,11 +261,7 @@ const CreatePage = () => {
               ? "pointer-events-none opacity-0 h-0 p-0 m-0"
               : ""
           }`}
-          contract={{
-            ...MVerFactoryABIAddress,
-            functionName: "createContent",
-            args,
-          }}
+          contract={contractConfig}
           buttonText="Publish Content"
         />
       </div>
