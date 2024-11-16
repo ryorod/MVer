@@ -2,12 +2,21 @@
   "name": "contracts",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:MVerOriginal": "hardhat ignition deploy ignition/modules/MVerOriginal.ts --network base-sepolia",
+    "verify:MVerOriginal": "hardhat verify 0x2BBc8993B3fEc795DED0b0aa050110a2e2B3F76D --network base-sepolia",
+    "deploy:MVerFactory": "hardhat ignition deploy ignition/modules/MVerFactory.ts --network base-sepolia",
+    "verify:MVerFactory": "hardhat verify 0x133926687672EdF79ce28A8F3180b30c154f5a55 --network base-sepolia --constructor-args ignition/arguments/MVerFactory.ts"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-ignition": "^0.15.7",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
     "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
     "@nomicfoundation/hardhat-verify": "^2.0.0",
     "@nomicfoundation/ignition-core": "^0.15.7",
+    "dotenv": "^16.4.5",
     "hardhat": "^2.22.15"
   },
   "dependencies": {

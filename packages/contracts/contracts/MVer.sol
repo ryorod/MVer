@@ -37,7 +37,7 @@ contract MVerOriginal is ERC721, ERC721URIStorage, ERC721Enumerable {
         uint256 newLikeCount
     );
 
-    constructor() ERC721("MVer Original", "KORG") {}
+    constructor() ERC721("MVer Original", "MVERO") {}
 
     function createContent(
         string memory title,
