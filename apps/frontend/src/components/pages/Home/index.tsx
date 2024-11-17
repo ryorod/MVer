@@ -171,7 +171,7 @@ const MainFeed = () => {
   };
 
   return (
-    <div className="h-screen bg-black text-white">
+    <div className="h-dvh bg-black text-white">
       {/* Header */}
       <div className="fixed top-0 w-full max-w-xl z-50 p-4 bg-gradient-to-b from-black to-transparent">
         <div className="flex justify-between items-center">
